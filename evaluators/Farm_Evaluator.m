@@ -4,25 +4,25 @@ Created on: xxxx
 
 NAME
     Farm_Evalautor.m
-    
-MATLAB VERSION   
-    R2019a 
-    
+
+MATLAB VERSION
+    R2019a
+
 DESCRIPTION
     Calculates Annual Energy Production (AEP) of a Wind Farm
-    ============================================================    
-    
+    ============================================================
+
     Farm_Evalautor.m is a Matlab file that calculates AEP (GWh)
-    of a certain arrangement of wind turbines in a wind farm, under 
-    given annual wind conditions. 
-    
+    of a certain arrangement of wind turbines in a wind farm, under
+    given annual wind conditions.
+
     The code in this script for wake-effect modeling is based on
-    standard Jensen (PARK) model. 
-    I. Katic, J. Hojstrup and N. Jensen, "A simple model for cluster 
-    efficiency," in European Wind Energy Association Conference and 
+    standard Jensen (PARK) model.
+    I. Katic, J. Hojstrup and N. Jensen, "A simple model for cluster
+    efficiency," in European Wind Energy Association Conference and
     Exhibition, 1986.
-    
-    As its inputs, the code takes three data files containing info 
+
+    As its inputs, the code takes three data files containing info
     about:
     - Turbine Locations
     - Turbine Power Curve
@@ -32,7 +32,7 @@ DESCRIPTION
 clc
 clear variables
 
-%% 
+%%
 % Turbine Specifications.
 % -**-SHOULD NOT BE MODIFIED-**-
 turb_specs        = struct();
@@ -47,27 +47,27 @@ turb_specs.cutOutWindSpeed = 25;  % in m/s
 turb_specs.ratedWindSpeed  = 15;  % in m/s
 turb_specs.ratedPower = 3; % in MW
 
-%% 
+%%
 % Load Data Files and Read
 % Turbine x,y coordinates
-layoutFile = '..\Shell_Hackathon Dataset\turbine_loc_test.csv';
+layoutFile = '../data/turbine_loc_test.csv';
 % Power curve
-powerCurveFile = '..\Shell_Hackathon Dataset\power_curve.csv';
+powerCurveFile = '../data/power_curve.csv';
 % Wind Data
-windDataFile = '..\Shell_Hackathon Dataset\Wind Data\wind_data_2007.csv';
+windDataFile = '../data/wind/wind_data_2007.csv';
 
 % Read the above data files
-turb_coords  = table2array(readtable(layoutFile));    
-power_curve  = readtable(powerCurveFile);             
-windData     = readtable(windDataFile);                 
+turb_coords  = table2array(readtable(layoutFile));
+power_curve  = readtable(powerCurveFile);
+windData     = readtable(windDataFile);
 
 %% Checking if the turbine coordinates satisfies the constraints
-% Comment out the function call to checkConstraints below if you desire. 
-% Note that this is just a check and the function does not quantifies the 
-% amount by which the constraints are violated if any. 
+% Comment out the function call to checkConstraints below if you desire.
+% Note that this is just a check and the function does not quantifies the
+% amount by which the constraints are violated if any.
 checkConstraints(turb_coords, turb_specs.diameter)
 
-%% 
+%%
 % Bin wind data and calculate probability of wind instance occurence
 % -**-SHOULD NOT BE MODIFIED-**-
 % speed 'slices'
@@ -85,15 +85,15 @@ for i = 1:n_slices_drct
         foo = windData.drct == slices_drct(i) & ...
                windData.sped >= slices_sped(j) &  ...
                windData.sped < slices_sped(j+1);
-        
-        binned_wind(i,j) = sum(foo);         
+
+        binned_wind(i,j) = sum(foo);
     end
 end
 wind_inst_freq = binned_wind/sum(sum(binned_wind));
 directionBins  = slices_drct;
 % take the mid value as effective speed
 speedBins      = mean([slices_sped(1:end-1);slices_sped(2:end)]);
-  
+
 %% AEP calculation
 disp('Calculating AEP......')
 [AEP,~] = totalAEP(turb_coords,power_curve,wind_inst_freq,directionBins,speedBins,turb_specs);
@@ -101,9 +101,9 @@ format long
 disp(AEP)
 
 %% clear temporary vars
-clearvars -except AEP windData windDataBinCount WindTurbineParameters 
+clearvars -except AEP windData windDataBinCount WindTurbineParameters
 
-%% 
+%%
 % AEP calculation
 % -**-SHOULD NOT BE MODIFIED-**-
 % Calculates the wind farm AEP
@@ -114,18 +114,18 @@ farm_power = zeros(length(directionBins),length(speedBins));
 % Looping over every wind instance and calc Power
 for i = 1:length(directionBins)
     for j = 1:length(speedBins)
-        
+
         % Wind speed and direction in the bin
         wind_drct = directionBins(i);
         wind_sped = speedBins(j);
-        
+
         farm_power(i,j) = partAEP(turb_coords, power_curve, ...
                                       wind_drct, wind_sped, ...
                                       turb_specs);
     end
 end
 
-% multiply the respective values with the wind instance probabilities 
+% multiply the respective values with the wind instance probabilities
 farm_power = farm_power .* wind_inst_freq;
 
 % AEP in GWh
@@ -133,11 +133,11 @@ hrs_per_year = 365.0 * 24.0;
 AEP = hrs_per_year * sum(sum(farm_power))/1000;
 
 end
-          
 
-%% 
-% -**-SHOULD NOT BE MODIFIED-**-   
-% Returns total power produced by all the turbine for this particular 
+
+%%
+% -**-SHOULD NOT BE MODIFIED-**-
+% Returns total power produced by all the turbine for this particular
 % 'wind instance' represented by wind_drct, wind_sped.
 function power = partAEP(turb_coords,power_curve,wind_drct,wind_sped,turb_specs)
 % number of turbines in the layout
@@ -173,23 +173,23 @@ impact_on_ibyj = zeros(n_turbs,n_turbs);
 for i=1:n_turbs
     % looping over all other turbs to check their effect
     for j=1:n_turbs
-        
+
         % Turbines seperation distance in downwind direction
         x = (turb_coords(i,1) - turb_coords(j,1))* cos_dir -  ...
             (turb_coords(i,2) - turb_coords(j,2)) * sin_dir;
-        
+
         % Turbines seperation distance in crosswind direction
         y = (turb_coords(i,1) - turb_coords(j,1))* sin_dir + ...
             (turb_coords(i,2) - turb_coords(j,2)) * cos_dir;
-        
+
         % Naturally, no wake effect of turbine on itself
         if i ~= j
-            
-            % either j not an upstream turbine or wake not happening 
+
+            % either j not an upstream turbine or wake not happening
             % on i because its outside of the wake region of j
             if (x <= 0) || (abs(y) > (turb_rad + kw*x))
                 impact_on_ibyj(i,j) = 0.0;
-            
+
             % otherwise, at target i, wake is happening due to j
             else
                 impact_on_ibyj(i,j) = (1-sqrt(1-Ct)) * ...
@@ -197,19 +197,19 @@ for i=1:n_turbs
             end
         end
     end
-    
+
     % Calculate Total vel deficit from all upstream turbs, using sqrt of sum of sqrs
     sped_deficit = sqrt(sum(impact_on_ibyj(i,:) .* impact_on_ibyj(i,:)));
-    
+
     % Effective wind speed at ith turbibe
     wind_sped_eff = wind_sped * (1.0 - sped_deficit);
-    
+
     % we use power_curve data as look up to estimate the power produced
     % by the turbine for the corresponding closest matching wind speed
     % turb_pwr(i) = interpn(power_curve.WindSpeed_m_s_, power_curve.Power_MW_, ...
     %                           wind_sped_eff, 'nearest');
     turb_pwr(i) = qinterp1(power_curve.WindSpeed_m_s_, power_curve.Power_MW_, ...
-                              wind_sped_eff, 0);                      
+                              wind_sped_eff, 0);
 end
 % Sum the power from all turbines for this wind instance
 power = sum(turb_pwr);
@@ -221,10 +221,10 @@ function checkConstraints(turb_coords, turb_dia)
 % -**-THIS FUNCTION SHOULD NOT BE MODIFIED-**-
 
 % Checks if the turbine configuration satisfies the two
-% constraints:(i) perimeter constraint,(ii) proximity constraint 
-% Prints which constraints are violated if any. Note that this 
-% function does not quantifies the amount by which the constraints 
-% are violated if any. 
+% constraints:(i) perimeter constraint,(ii) proximity constraint
+% Prints which constraints are violated if any. Note that this
+% function does not quantifies the amount by which the constraints
+% are violated if any.
 
 prox_constr_viol = 0;
 peri_constr_viol = 0;
@@ -256,26 +256,26 @@ for i = 1:numberOfTurbines
     end
 end
 
-% checks if for every turbines proximity constraint is satisfied. 
+% checks if for every turbines proximity constraint is satisfied.
 % breaks out if False anywhere
 for i = 1:numberOfTurbines
     for j = 1:numberOfTurbines
-        
+
         if (i ~= j)
             xi = turb_coords(i,1);
             yi = turb_coords(i,2);
             xj = turb_coords(j,1);
             yj = turb_coords(j,2);
-            
+
             dist_ij = sqrt((xi-xj)^2 + (yi-yj)^2);
             if (dist_ij < minAllowableDistance)
                 prox_constr_viol = 1;
                 break
             end
-            
+
         end
-    end    
-end 
+    end
+end
 
 % print messages
 if  (peri_constr_viol  == 1  && prox_constr_viol == 1)
