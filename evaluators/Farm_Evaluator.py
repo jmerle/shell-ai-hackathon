@@ -359,7 +359,7 @@ def totalAEP(turb_diam, turb_coords, power_curve, wind_inst_freq):
 
     # Looping over every wind instance and calc Power
     # set disable=True for disabling progressbar
-    for i in tqdm(range(n_slices_drct), disable=False):
+    for i in tqdm(range(n_slices_drct), disable=True):
         for j in range(n_slices_sped):
 
             # take the mid value as effective speed
@@ -467,7 +467,7 @@ if __name__ == "__main__":
     turb_coords    =  getTurbLoc(r'../data/turbine_loc_test.csv')
 
     # Load the power curve
-    power_curve    =  loadPowerCurve('../data/power_curve.csv')
+    power_curve    =  loadPowerCurve(r'../data/power_curve.csv')
 
     # Pass wind data csv file location to function binWindResourceData.
     # Retrieve probabilities of wind instance occurence.

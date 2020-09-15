@@ -475,7 +475,7 @@ if __name__ == "__main__":
     turb_coords   =  getTurbLoc(r'../data/turbine_loc_test.csv')
 
     # Load the power curve
-    power_curve   =  loadPowerCurve('../data/power_curve.csv')
+    power_curve   =  loadPowerCurve(r'../data/power_curve.csv')
 
     # Pass wind data csv file location to function binWindResourceData.
     # Retrieve probabilities of wind instance occurence.
