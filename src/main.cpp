@@ -24,31 +24,7 @@ int main() {
   auto windSingle = fileReader.readWindData({windDataFiles.front()});
   auto windAll = fileReader.readWindData(windDataFiles);
 
-  std::cout << "==================================================" << std::endl;
-  std::cout << "Turbine locations:" << std::endl;
-  std::cout << "==================================================" << std::endl;
-  std::cout << turbineLocations << std::endl;
-
-  std::cout << std::endl;
-
-  std::cout << "==================================================" << std::endl;
-  std::cout << "Power curve:" << std::endl;
-  std::cout << "==================================================" << std::endl;
-  std::cout << powerCurve << std::endl;
-
-  std::cout << std::endl;
-
-  std::cout << "==================================================" << std::endl;
-  std::cout << "Wind data (single):" << std::endl;
-  std::cout << "==================================================" << std::endl;
-  std::cout << windSingle << std::endl;
-
-  std::cout << std::endl;
-
-  std::cout << "==================================================" << std::endl;
-  std::cout << "Wind data (all):" << std::endl;
-  std::cout << "==================================================" << std::endl;
-  std::cout << windAll << std::endl;
+  std::cout << windAll.rows() << std::endl;
 
   return 0;
 }
