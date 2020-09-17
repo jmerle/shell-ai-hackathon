@@ -6,6 +6,9 @@
 FileReader::FileReader() {
   auto currentPath = std::filesystem::current_path();
 
+  // Figure out what the root directory of the project is
+  // It is assumed that the binary is ran from the root of the project or from one of the directories in its subtree
+  // When relative paths are to be converted into absolute ones, they are resolved relative to the root directory
   while (currentPath.has_parent_path()) {
     if (std::filesystem::exists(currentPath / "README.md")) {
       rootDirectory = currentPath;
@@ -43,19 +46,14 @@ Eigen::Matrix<double, Eigen::Dynamic, 3> FileReader::readPowerCurve(const std::s
   return powerCurve;
 }
 
-Eigen::Matrix<double, Eigen::Dynamic, 2> FileReader::readWindData(const std::list<std::string> &paths) const {
-  std::vector<std::vector<std::string>> rows;
+Eigen::Matrix<double, Eigen::Dynamic, 2> FileReader::readWindData(const std::string &path) const {
+  auto csv = readCsv(path);
 
-  for (const auto &path : paths) {
-    auto content = readCsv(path);
-    rows.insert(rows.end(), content.begin(), content.end());
-  }
+  Eigen::Matrix<double, Eigen::Dynamic, 2> windData(csv.size(), 2);
 
-  Eigen::Matrix<double, Eigen::Dynamic, 2> windData(rows.size(), 2);
-
-  for (int i = 0; i < rows.size(); i++) {
-    windData(i, 0) = std::stod(rows[i][1]);
-    windData(i, 1) = std::stod(rows[i][2]);
+  for (int i = 0; i < csv.size(); i++) {
+    windData(i, 0) = std::stod(csv[i][1]);
+    windData(i, 1) = std::stod(csv[i][2]);
   }
 
   return windData;
@@ -80,6 +78,7 @@ std::vector<std::vector<std::string>> FileReader::readCsv(const std::string &pat
     rows.push_back(row);
   }
 
+  // All provided files contain a header row which we don't need
   if (!rows.empty()) {
     rows.erase(rows.begin());
   }

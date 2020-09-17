@@ -1,6 +1,6 @@
 #include "helpers.h"
 
-#include "file_reader.h"
+#include "core/file_reader.h"
 
 CLASS("FileReader") {
   FileReader fileReader;
@@ -45,8 +45,8 @@ CLASS("FileReader") {
   }
 
   METHOD("readWindData") {
-    TEST("Correctly reads from single file") {
-      auto result = fileReader.readWindData({"data/wind/wind_data_2007.csv"});
+    TEST("Correctly reads from the provided file") {
+      auto result = fileReader.readWindData("data/wind/wind_data_2007.csv");
 
       REQUIRE(result.rows() == 15548);
       REQUIRE(result.cols() == 2);
@@ -59,31 +59,6 @@ CLASS("FileReader") {
 
       REQUIRE_NEAR(result(15547, 0), 160.0);
       REQUIRE_NEAR(result(15547, 1), 11.655424);
-    }
-
-    TEST("Correctly combines data from multiple files") {
-      auto result = fileReader.readWindData({"data/wind/wind_data_2007.csv", "data/wind/wind_data_2008.csv"});
-
-      REQUIRE(result.rows() == 31703);
-      REQUIRE(result.cols() == 2);
-
-      REQUIRE_NEAR(result(0, 0), 290.0);
-      REQUIRE_NEAR(result(0, 1), 12.829798);
-
-      REQUIRE_NEAR(result(8895, 0), 310.0);
-      REQUIRE_NEAR(result(8895, 1), 7.1014156);
-
-      REQUIRE_NEAR(result(15547, 0), 160.0);
-      REQUIRE_NEAR(result(15547, 1), 11.655424);
-
-      REQUIRE_NEAR(result(15548, 0), 120.0);
-      REQUIRE_NEAR(result(15548, 1), 4.3657217);
-
-      REQUIRE_NEAR(result(25360, 0), 250.0);
-      REQUIRE_NEAR(result(25360, 1), 5.9121323);
-
-      REQUIRE_NEAR(result(31702, 0), 150.0);
-      REQUIRE_NEAR(result(31702, 1), 8.881837);
     }
   }
 }
