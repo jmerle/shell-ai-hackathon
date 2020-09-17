@@ -46,7 +46,7 @@ inline double getAbsoluteError(const std::string &number) {
 
 // A custom require which automatically figures out the absolute error to use when comparing doubles
 // The absolute error that is used is 1/10^(decimals+1), where decimals is the amount of digits after the dot
-// This affectively means that for an expected value of 1.234 an absolute error of 0.0001 is used
+// This means that for an expected value of 1.234 an absolute error of 0.0001 is used
 // If the amount of digits after the dot is not clear from the given expression, it falls back to 0.0000001
 #define REQUIRE_NEAR(actual, expected) \
   REQUIRE_THAT((actual), Catch::WithinAbs((expected), internal::getAbsoluteError(#expected)))
