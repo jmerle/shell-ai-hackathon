@@ -24,7 +24,7 @@ int main() {
   auto windSingle = fileReader.readWindData({windDataFiles.front()});
   auto windAll = fileReader.readWindData(windDataFiles);
 
-  std::cout << windAll.rows() << std::endl;
+  std::cout << powerCurve.rows() << std::endl;
 
   return 0;
 }

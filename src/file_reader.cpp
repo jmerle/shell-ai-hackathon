@@ -32,8 +32,7 @@ Eigen::Matrix<double, 50, 2> FileReader::readTurbineLocations(const std::string 
 Eigen::Matrix<double, Eigen::Dynamic, 3> FileReader::readPowerCurve(const std::string &path) const {
   auto csv = readCsv(path);
 
-  Eigen::Matrix<double, Eigen::Dynamic, 3> powerCurve;
-  powerCurve.resize(csv.size(), 3);
+  Eigen::Matrix<double, Eigen::Dynamic, 3> powerCurve(csv.size(), 3);
 
   for (int i = 0; i < csv.size(); i++) {
     powerCurve(i, 0) = std::stod(csv[i][0]);
@@ -52,8 +51,7 @@ Eigen::Matrix<double, Eigen::Dynamic, 2> FileReader::readWindData(const std::lis
     rows.insert(rows.end(), content.begin(), content.end());
   }
 
-  Eigen::Matrix<double, Eigen::Dynamic, 2> windData;
-  windData.resize(rows.size(), 2);
+  Eigen::Matrix<double, Eigen::Dynamic, 2> windData(rows.size(), 2);
 
   for (int i = 0; i < rows.size(); i++) {
     windData(i, 0) = std::stod(rows[i][1]);
