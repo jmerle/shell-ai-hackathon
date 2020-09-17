@@ -36,3 +36,7 @@ double getAbsoluteError(const std::string &number) {
 
 #define REQUIRE_NEAR(actual, expected) \
   REQUIRE_THAT((actual), Catch::WithinAbs((expected), internal::getAbsoluteError(#expected)))
+
+#define CLASS(name) TEST_CASE(name)
+#define METHOD(name) SECTION(name)
+#define TEST(description) SECTION("  " description)

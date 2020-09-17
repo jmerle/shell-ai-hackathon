@@ -2,11 +2,11 @@
 
 #include "file_reader.h"
 
-TEST_CASE("FileReader") {
+CLASS("FileReader") {
   FileReader fileReader;
 
-  SECTION("readTurbineLocations") {
-    SECTION("Correctly reads from the provided file") {
+  METHOD("readTurbineLocations") {
+    TEST("Correctly reads from the provided file") {
       auto result = fileReader.readTurbineLocations("data/turbine_loc_test.csv");
 
       REQUIRE(result.rows() == 50);
@@ -23,8 +23,8 @@ TEST_CASE("FileReader") {
     }
   }
 
-  SECTION("readPowerCurve") {
-    SECTION("Correctly reads from the provided file") {
+  METHOD("readPowerCurve") {
+    TEST("Correctly reads from the provided file") {
       auto result = fileReader.readPowerCurve("data/power_curve.csv");
 
       REQUIRE(result.rows() == 501);
@@ -44,8 +44,8 @@ TEST_CASE("FileReader") {
     }
   }
 
-  SECTION("readWindData") {
-    SECTION("Correctly reads from single file") {
+  METHOD("readWindData") {
+    TEST("Correctly reads from single file") {
       auto result = fileReader.readWindData({"data/wind/wind_data_2007.csv"});
 
       REQUIRE(result.rows() == 15548);
@@ -61,7 +61,7 @@ TEST_CASE("FileReader") {
       REQUIRE_NEAR(result(15547, 1), 11.655424);
     }
 
-    SECTION("Correctly combines data from multiple files") {
+    TEST("Correctly combines data from multiple files") {
       auto result = fileReader.readWindData({"data/wind/wind_data_2007.csv", "data/wind/wind_data_2008.csv"});
 
       REQUIRE(result.rows() == 31703);
