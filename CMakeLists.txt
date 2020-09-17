@@ -17,8 +17,8 @@ conan_cmake_run(REQUIRES
         # Eigen for linear algebra
         eigen/3.3.7
 
-        # GTest for unit tests
-        gtest/1.10.0
+        # Catch2 for unit tests
+        catch2/2.13.1
 
         # Create CMake targets for all dependencies and build dependencies that can't be downloaded as binaries
         BASIC_SETUP CMAKE_TARGETS BUILD missing)
@@ -32,6 +32,7 @@ CHECK_CXX_COMPILER_FLAG("-march=native" COMPILER_SUPPORTS_MARCH_NATIVE)
 if (COMPILER_SUPPORTS_MARCH_NATIVE)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
 endif ()
+
 # Variables for the main executable
 file(GLOB_RECURSE MAIN_SOURCES src/*.cpp)
 list(REMOVE_ITEM MAIN_SOURCES "${CMAKE_CURRENT_LIST_DIR}/src/benchmark.cpp")
@@ -47,7 +48,7 @@ set(BENCHMARK_LIBRARIES ${MAIN_LIBRARIES})
 file(GLOB_RECURSE TESTS_SOURCES tests/*.cpp)
 set(MAIN_SOURCES_WITHOUT_MAIN ${MAIN_SOURCES})
 list(REMOVE_ITEM MAIN_SOURCES_WITHOUT_MAIN "${CMAKE_CURRENT_LIST_DIR}/src/main.cpp")
-set(TESTS_LIBRARIES CONAN_PKG::gtest)
+set(TESTS_LIBRARIES CONAN_PKG::catch2)
 
 # Configuration for the main executable
 add_executable(main ${MAIN_SOURCES})
@@ -64,5 +65,5 @@ target_link_libraries(benchmark ${BENCHMARK_LIBRARIES})
 # Configuration for the tests executable
 add_executable(tests ${TESTS_SOURCES} ${MAIN_SOURCES_WITHOUT_MAIN})
 target_compile_features(tests PUBLIC ${CPP_VERSION})
-target_include_directories(tests PUBLIC ${TESTS_HEADERS})
+target_include_directories(tests PUBLIC ${MAIN_HEADERS})
 target_link_libraries(tests ${TESTS_LIBRARIES} ${MAIN_LIBRARIES})
