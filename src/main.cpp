@@ -6,20 +6,16 @@
 #include <iostream>
 
 int main() {
-  LayoutEvaluator evaluator;
-  evaluator.addWindData("data/wind/wind_data_2007.csv");
-  evaluator.addWindData("data/wind/wind_data_2008.csv");
-  evaluator.addWindData("data/wind/wind_data_2009.csv");
-  evaluator.addWindData("data/wind/wind_data_2013.csv");
-  evaluator.addWindData("data/wind/wind_data_2014.csv");
-  evaluator.addWindData("data/wind/wind_data_2015.csv");
-  evaluator.addWindData("data/wind/wind_data_2017.csv");
+  LayoutEvaluator layoutEvaluator;
+  layoutEvaluator.addWindData("data/wind/wind_data_2014.csv");
+  layoutEvaluator.addWindData("data/wind/wind_data_2015.csv");
+  layoutEvaluator.addWindData("data/wind/wind_data_2017.csv");
 
   FileReader fileReader;
   auto outputPath = fileReader.resolvePath("output/turbine_locations.csv");
 
   auto currentBestTurbineLocations = fileReader.readTurbineLocations(outputPath);
-  auto currentBestAEP = evaluator.calculateAEP(currentBestTurbineLocations);
+  auto currentBestAEP = layoutEvaluator.calculateAEP(currentBestTurbineLocations);
 
   std::cout << std::fixed << std::setprecision(5);
   std::cout << "Current best AEP: " << currentBestAEP << std::endl;
@@ -38,7 +34,7 @@ int main() {
       continue;
     }
 
-    double aep = evaluator.calculateAEP(turbineLocations);
+    double aep = layoutEvaluator.calculateAEP(turbineLocations);
 
     if (aep > currentBestAEP) {
       std::cout << "New best AEP: " << aep << std::endl;
