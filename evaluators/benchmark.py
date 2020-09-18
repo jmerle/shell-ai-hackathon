@@ -17,7 +17,7 @@ TURBINE_SPECS = {
     'Rated Power (MW)': 3
 }
 
-# The amount of runs to run each evaluator
+# The amount of times to run each evaluator
 RUNS = 100
 
 def benchmark(func):

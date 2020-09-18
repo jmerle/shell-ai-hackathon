@@ -60,8 +60,8 @@ target_link_libraries(main ${MAIN_LIBRARIES})
 # Configuration for the benchmark executable
 add_executable(benchmark ${BENCHMARK_SOURCES})
 target_compile_features(benchmark PUBLIC ${CPP_VERSION})
-target_include_directories(benchmark PUBLIC ${BENCHMARK_HEADERS})
-target_link_libraries(benchmark ${BENCHMARK_LIBRARIES})
+target_include_directories(benchmark PUBLIC ${MAIN_HEADERS})
+target_link_libraries(benchmark ${MAIN_LIBRARIES})
 
 # Configuration for the tests executable
 add_executable(tests ${TESTS_SOURCES} ${MAIN_SOURCES_WITHOUT_MAIN})
