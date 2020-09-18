@@ -7,7 +7,8 @@
 
 int main() {
   LayoutEvaluator layoutEvaluator;
-  layoutEvaluator.addWindData("data/wind/wind_data_2007.csv");
+  layoutEvaluator.addWindData("data/wind/wind_data_2014.csv");
+  layoutEvaluator.addWindData("data/wind/wind_data_2015.csv");
   layoutEvaluator.addWindData("data/wind/wind_data_2017.csv");
 
   FileReader fileReader;

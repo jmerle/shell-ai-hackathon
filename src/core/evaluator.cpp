@@ -101,19 +101,16 @@ Vector<TurbineCount> Evaluator::jensenParkWake(const TurbineLocations &rotatedTu
   // i is the target turbine, j is the turbine which may cause a deficit for i
   for (int i = 0; i < TurbineCount; i++) {
     for (int j = 0; j < TurbineCount; j++) {
-      if (i == j) {
-        continue;
-      }
-
       double x = rotatedTurbineLocations(i, 0) - rotatedTurbineLocations(j, 0);
 
       if (x > 0) {
         double y = rotatedTurbineLocations(i, 1) - rotatedTurbineLocations(j, 1);
+        double threshold = TurbineRadius + WakeDecay * x;
 
-        if (std::abs(y) <= (TurbineRadius + WakeDecay * x)) {
+        if (std::abs(y) <= threshold) {
           // Use Jensen's model to calculate the impact
           impactOnIbyj(i, j) =
-              (1 - std::sqrt(1 - thrustCoefficient)) * std::pow(TurbineRadius / (TurbineRadius + WakeDecay * x), 2);
+              (1 - std::sqrt(1 - thrustCoefficient)) * std::pow(TurbineRadius / threshold, 2);
         }
       }
     }
