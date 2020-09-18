@@ -6,26 +6,54 @@
 CLASS("ConstraintChecker") {
   ConstraintChecker constraintChecker;
 
-  FileReader fileReader;
-  auto turbineLocations = fileReader.readTurbineLocations("data/turbine_loc_test.csv");
-
   METHOD("isValidLayout") {
     TEST("Returns true on the turbine locations provided by the organizers") {
+      FileReader fileReader;
+      auto turbineLocations = fileReader.readTurbineLocations("data/turbine_loc_test.csv");
+
       REQUIRE(constraintChecker.isValidLayout(turbineLocations));
     }
 
     TEST("Returns false if the perimeter constraint is violated") {
+      TurbineLocations turbineLocations;
+
+      int currentRow = 0;
+
+      for (int y = PerimeterClearance; y < MapHeight - PerimeterClearance; y += ProximityThreshold) {
+        for (int x = PerimeterClearance; x < MapWidth - PerimeterClearance; x += ProximityThreshold) {
+          if (currentRow >= TurbineCount) {
+            break;
+          }
+
+          turbineLocations(currentRow, 0) = x;
+          turbineLocations(currentRow, 1) = y;
+          currentRow++;
+        }
+      }
+
       turbineLocations(0, 0) = PerimeterClearance - 1.0;
 
       REQUIRE(!constraintChecker.isValidLayout(turbineLocations));
     }
 
     TEST("Returns false if the proximity constraint is violated") {
-      turbineLocations(0, 0) = PerimeterClearance;
-      turbineLocations(0, 1) = PerimeterClearance;
+      TurbineLocations turbineLocations;
 
-      turbineLocations(1, 0) = PerimeterClearance + ProximityThreshold - 1.0;
-      turbineLocations(1, 1) = PerimeterClearance;
+      int currentRow = 0;
+
+      for (int y = PerimeterClearance; y < MapHeight - PerimeterClearance; y += ProximityThreshold) {
+        for (int x = PerimeterClearance; x < MapWidth - PerimeterClearance; x += ProximityThreshold) {
+          if (currentRow >= TurbineCount) {
+            break;
+          }
+
+          turbineLocations(currentRow, 0) = x;
+          turbineLocations(currentRow, 1) = y;
+          currentRow++;
+        }
+      }
+
+      turbineLocations(0, 0) = PerimeterClearance + 1.0;
 
       REQUIRE(!constraintChecker.isValidLayout(turbineLocations));
     }
