@@ -22,7 +22,7 @@ constexpr double RotorRadius = RotorDiameter / 2.0;
 // Typedefs
 
 template<int Rows, int Cols>
-using Matrix = Eigen::Matrix<double, Rows, Cols>;
+using Matrix = Eigen::Array<double, Rows, Cols>;
 
 template<int Rows>
 using Vector = Matrix<Rows, 1>;
