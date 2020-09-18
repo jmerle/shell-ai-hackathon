@@ -2,7 +2,7 @@
 
 #include <cmath>
 
-Evaluator::Evaluator() {
+Evaluator::Evaluator(const PowerCurve &powerCurve, const WindData &windData) : powerCurve(powerCurve) {
   for (int i = 0; i < directionSlices.rows(); i++) {
     if (i == 0) {
       directionSlices(i) = 360.0;
@@ -14,11 +14,11 @@ Evaluator::Evaluator() {
   for (int i = 0; i < speedSlices.rows(); i++) {
     speedSlices(i) = 2.0 * i;
   }
+
+  binnedWindData = binWindData(windData);
 }
 
-double Evaluator::calculateAEP(const TurbineLocations &turbineLocations,
-                               const PowerCurve &powerCurve,
-                               const WindData &windData) const {
+double Evaluator::calculateAEP(const TurbineLocations &turbineLocations) const {
   // Power produced by the wind farm from each wind instance
   Matrix<36, 15> farmPower;
   farmPower.setZero();
@@ -30,12 +30,12 @@ double Evaluator::calculateAEP(const TurbineLocations &turbineLocations,
       double windDirection = directionSlices[i];
       double windSpeed = (speedSlices[j] + speedSlices[j + 1]) / 2.0;
 
-      farmPower(i, j) = calculatePartialAEP(turbineLocations, powerCurve, windDirection, windSpeed);
+      farmPower(i, j) = calculatePartialAEP(turbineLocations, windDirection, windSpeed);
     }
   }
 
   // Multiply the respective values with the probabilities of the wind instances
-  farmPower *= binWindData(windData);
+  farmPower *= binnedWindData;
 
   // Convert farm power to AEP
   double aep = 365.0 * 24.0 * farmPower.sum();
@@ -45,14 +45,13 @@ double Evaluator::calculateAEP(const TurbineLocations &turbineLocations,
 }
 
 double Evaluator::calculatePartialAEP(const TurbineLocations &turbineLocations,
-                                      const PowerCurve &powerCurve,
                                       double windDirection,
                                       double windSpeed) const {
   // Rotate turbine locations to downwind-crosswind according to the given wind direction
   auto rotatedLocations = rotateFrame(turbineLocations, windDirection);
 
   // Use Jensen's wake model to calculate speed deficits by wake
-  auto speedDeficit = jensenParkWake(rotatedLocations, powerCurve, windSpeed);
+  auto speedDeficit = jensenParkWake(rotatedLocations, windSpeed);
 
   // Power of all turbines
   Vector<TurbineCount> turbinePower;
@@ -95,7 +94,6 @@ TurbineLocations Evaluator::rotateFrame(const TurbineLocations &turbineLocations
 }
 
 Vector<TurbineCount> Evaluator::jensenParkWake(const TurbineLocations &rotatedTurbineLocations,
-                                               const PowerCurve &powerCurve,
                                                double windSpeed) const {
   // Use the power curve data as look up to estimate the thrust coefficient
   // by the turbine for the corresponding closest matching wind speed
@@ -141,8 +139,8 @@ Vector<TurbineCount> Evaluator::jensenParkWake(const TurbineLocations &rotatedTu
 }
 
 Matrix<36, 15> Evaluator::binWindData(const WindData &windData) const {
-  Matrix<36, 15> binnedWindData;
-  binnedWindData.setZero();
+  Matrix<36, 15> binnedData;
+  binnedData.setZero();
 
   // Trap data points inside the bins
   for (int i = 0, iMax = directionSlices.rows(); i < iMax; i++) {
@@ -161,10 +159,10 @@ Matrix<36, 15> Evaluator::binWindData(const WindData &windData) const {
           total++;
         }
 
-        binnedWindData(i, j) = total;
+        binnedData(i, j) = total;
       }
     }
   }
 
-  return binnedWindData / binnedWindData.sum();
+  return binnedData / binnedData.sum();
 }

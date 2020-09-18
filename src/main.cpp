@@ -18,8 +18,8 @@ int main() {
     return 1;
   }
 
-  Evaluator evaluator;
-  double aep = evaluator.calculateAEP(turbineLocations, powerCurve, windData);
+  Evaluator evaluator(powerCurve, windData);
+  double aep = evaluator.calculateAEP(turbineLocations);
 
   std::cout << "AEP: " << aep << std::endl;
 

@@ -15,14 +15,14 @@ int main() {
   auto powerCurve = fileReader.readPowerCurve("data/power_curve.csv");
   auto windData = fileReader.readWindData("data/wind/wind_data_2007.csv");
 
-  Evaluator evaluator;
+  Evaluator evaluator(powerCurve, windData);
 
   std::cout << "Running the evaluator " << Runs << " times, this may take a while" << std::endl;
 
   auto start = std::chrono::high_resolution_clock::now();
 
   for (int i = 0; i < Runs; i++) {
-    evaluator.calculateAEP(turbineLocations, powerCurve, windData);
+    evaluator.calculateAEP(turbineLocations);
   }
 
   auto end = std::chrono::high_resolution_clock::now();

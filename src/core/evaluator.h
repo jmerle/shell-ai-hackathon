@@ -6,24 +6,22 @@ class Evaluator {
   Vector<36> directionSlices;
   Vector<16> speedSlices;
 
+  PowerCurve powerCurve;
+  Matrix<36, 15> binnedWindData;
+
  public:
-  Evaluator();
+  Evaluator(const PowerCurve &powerCurve, const WindData &windData);
 
   /**
    * Calculates the AEP of the given wind farm layout in GWh.
    */
-  double calculateAEP(const TurbineLocations &turbineLocations,
-                      const PowerCurve &powerCurve,
-                      const WindData &windData) const;
+  double calculateAEP(const TurbineLocations &turbineLocations) const;
 
  private:
   /**
    * Returns the total power produced by all turbines for the wind instance represented by windDirection.
    */
-  double calculatePartialAEP(const TurbineLocations &turbineLocations,
-                             const PowerCurve &powerCurve,
-                             double windDirection,
-                             double windSpeed) const;
+  double calculatePartialAEP(const TurbineLocations &turbineLocations, double windDirection, double windSpeed) const;
 
   /**
    * Rotates euclidean coordinates to downwind-crosswind coordinates.
@@ -35,9 +33,7 @@ class Evaluator {
    * For each turbine, returns the total velocity deficit due to the wakes from all contributing upstream turbines.
    * Uses Jensen's wake model.
    */
-  Vector<TurbineCount> jensenParkWake(const TurbineLocations &rotatedTurbineLocations,
-                                      const PowerCurve &powerCurve,
-                                      double windSpeed) const;
+  Vector<TurbineCount> jensenParkWake(const TurbineLocations &rotatedTurbineLocations, double windSpeed) const;
 
   /**
    * Converts wind data into a 2D matrix in which each row represents a wind direction and each row a speed instance.
