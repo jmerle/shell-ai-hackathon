@@ -16,7 +16,6 @@ CLASS("ConstraintChecker") {
 
     TEST("Returns false if the perimeter constraint is violated") {
       turbineLocations(0, 0) = PerimeterClearance - 1.0;
-      turbineLocations(0, 1) = MapHeight - PerimeterClearance + 1.0;
 
       REQUIRE(!constraintChecker.isValidLayout(turbineLocations));
     }

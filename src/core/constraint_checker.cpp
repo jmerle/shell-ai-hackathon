@@ -23,15 +23,17 @@ bool ConstraintChecker::checkPerimeterConstraint(const Eigen::Matrix<double, Tur
 bool ConstraintChecker::checkProximityConstraint(const Eigen::Matrix<double, TurbineCount, 2> &turbineLocations) const {
   for (int i = 0; i < TurbineCount; i++) {
     for (int j = 0; j < TurbineCount; j++) {
-      if (i != j) {
-        double x1 = turbineLocations(i, 0);
-        double y1 = turbineLocations(i, 1);
-        double x2 = turbineLocations(j, 0);
-        double y2 = turbineLocations(j, 1);
+      if (i == j) {
+        continue;
+      }
 
-        if (getDistance(x1, y1, x2, y2) < ProximityThreshold) {
-          return false;
-        }
+      double x1 = turbineLocations(i, 0);
+      double y1 = turbineLocations(i, 1);
+      double x2 = turbineLocations(j, 0);
+      double y2 = turbineLocations(j, 1);
+
+      if (getDistance(x1, y1, x2, y2) < ProximityThreshold) {
+        return false;
       }
     }
   }
