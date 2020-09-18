@@ -1,27 +1,57 @@
-#include "core/constraint_checker.h"
 #include "core/evaluator.h"
 #include "core/file_reader.h"
+#include "strategy/layout_generator.h"
 
+#include <fstream>
 #include <iostream>
 
 int main() {
   FileReader fileReader;
-  auto turbineLocations = fileReader.readTurbineLocations("data/turbine_loc_test.csv");
   auto powerCurve = fileReader.readPowerCurve("data/power_curve.csv");
   auto windData = fileReader.readWindData("data/wind/wind_data_2007.csv");
 
-  ConstraintChecker constraintChecker;
-  if (constraintChecker.isValidLayout(turbineLocations)) {
-    std::cout << "Turbine locations are valid" << std::endl;
-  } else {
-    std::cout << "Turbine locations are invalid" << std::endl;
-    return 1;
-  }
-
   Evaluator evaluator(powerCurve, windData);
-  double aep = evaluator.calculateAEP(turbineLocations);
 
-  std::cout << "AEP: " << aep << std::endl;
+  auto outputPath = fileReader.resolvePath("output/turbine_locations.csv");
+
+  auto currentBestTurbineLocations = fileReader.readTurbineLocations(outputPath);
+  auto currentBestAEP = evaluator.calculateAEP(currentBestTurbineLocations);
+
+  std::cout << "Current best AEP: " << currentBestAEP << std::endl;
+
+  LayoutGenerator layoutGenerator;
+
+  // Continuously check for better layouts
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "EndlessLoop"
+  while (true) {
+    auto turbineLocations = layoutGenerator.generateLayout();
+
+    // If the first cell is set to -1.0 the LayoutGenerator was unable to create a valid layout
+    // While exceptions would be nicer, this is faster
+    if (turbineLocations(0, 0) < 0.0) {
+      continue;
+    }
+
+    double aep = evaluator.calculateAEP(turbineLocations);
+
+    if (aep < currentBestAEP) {
+      std::cout << "New best AEP: " << aep << std::endl;
+
+      currentBestAEP = aep;
+      std::ofstream outputFile(outputPath);
+
+      outputFile << "x,y" << std::endl;
+      outputFile << std::fixed << std::setprecision(6);
+
+      for (int i = 0; i < TurbineCount; i++) {
+        outputFile << turbineLocations(i, 0) << "," << turbineLocations(i, 1) << std::endl;
+      }
+
+      outputFile.close();
+    }
+  }
+#pragma clang diagnostic pop
 
   return 0;
 }

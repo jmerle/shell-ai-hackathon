@@ -59,6 +59,10 @@ WindData FileReader::readWindData(const std::string &path) const {
   return windData;
 }
 
+std::filesystem::path FileReader::resolvePath(const std::string &path) const {
+  return rootDirectory / std::filesystem::path(path);
+}
+
 std::vector<std::vector<std::string>> FileReader::readCsv(const std::string &path) const {
   std::ifstream file(resolvePath(path));
 
@@ -84,8 +88,4 @@ std::vector<std::vector<std::string>> FileReader::readCsv(const std::string &pat
   }
 
   return rows;
-}
-
-std::filesystem::path FileReader::resolvePath(const std::string &path) const {
-  return rootDirectory / std::filesystem::path(path);
 }
