@@ -1,22 +1,21 @@
-#include "core/evaluator.h"
 #include "core/file_reader.h"
+#include "strategy/layout_evaluator.h"
 #include "strategy/layout_generator.h"
 
 #include <fstream>
 #include <iostream>
 
 int main() {
+  LayoutEvaluator evaluator;
+  evaluator.addWindData("data/wind/wind_data_2007.csv");
+
   FileReader fileReader;
-  auto powerCurve = fileReader.readPowerCurve("data/power_curve.csv");
-  auto windData = fileReader.readWindData("data/wind/wind_data_2007.csv");
-
-  Evaluator evaluator(powerCurve, windData);
-
   auto outputPath = fileReader.resolvePath("output/turbine_locations.csv");
 
   auto currentBestTurbineLocations = fileReader.readTurbineLocations(outputPath);
   auto currentBestAEP = evaluator.calculateAEP(currentBestTurbineLocations);
 
+  std::cout << std::fixed << std::setprecision(5);
   std::cout << "Current best AEP: " << currentBestAEP << std::endl;
 
   LayoutGenerator layoutGenerator;
