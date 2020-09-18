@@ -464,7 +464,7 @@ if __name__ == "__main__":
 
 
     # Turbine x,y coordinates
-    turb_coords    =  getTurbLoc(r'../data/turbine_loc_test.csv')
+    turb_coords    =  getTurbLoc(r'../data/fixtures/turbine_loc_test.csv')
 
     # Load the power curve
     power_curve    =  loadPowerCurve(r'../data/power_curve.csv')

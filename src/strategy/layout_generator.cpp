@@ -1,8 +1,7 @@
 #include "strategy/layout_generator.h"
 
-LayoutGenerator::LayoutGenerator() : distribution(PerimeterClearance, MapSize - PerimeterClearance) {
-  rng.seed(std::random_device{}());
-}
+LayoutGenerator::LayoutGenerator()
+    : generator(std::random_device{}()), distribution(PerimeterClearance, MapSize - PerimeterClearance) {}
 
 TurbineLocations LayoutGenerator::generateLayout() {
   TurbineLocations turbineLocations;
@@ -18,5 +17,5 @@ TurbineLocations LayoutGenerator::generateLayout() {
 }
 
 double LayoutGenerator::generateCoordinate() {
-  return distribution(rng);
+  return distribution(generator);
 }
