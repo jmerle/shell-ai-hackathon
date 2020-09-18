@@ -9,6 +9,9 @@ class Evaluator {
   PowerCurve powerCurve;
   Matrix<36, 15> binnedWindData;
 
+  double minsped = 1e9;
+  double maxsped = -1e9;
+
  public:
   Evaluator(const PowerCurve &powerCurve, const WindData &windData);
 

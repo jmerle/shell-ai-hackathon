@@ -6,13 +6,16 @@
 #include "core/file_reader.h"
 
 #include <string>
+#include <utility>
 #include <vector>
 
 class LayoutEvaluator {
-  std::vector<Evaluator> evaluators;
+  Evaluator *evaluator = nullptr;
 
   FileReader fileReader;
   PowerCurve powerCurve;
+
+  std::vector<std::pair<double, double>> rows;
 
  public:
   LayoutEvaluator();

@@ -1,6 +1,7 @@
 #include "evaluator.h"
 
 #include <cmath>
+#include <iostream>
 
 Evaluator::Evaluator(const PowerCurve &powerCurve, const WindData &windData) : powerCurve(powerCurve) {
   for (int i = 0; i < directionSlices.rows(); i++) {
@@ -30,12 +31,10 @@ double Evaluator::calculateAEP(const TurbineLocations &turbineLocations) const {
       double windDirection = directionSlices[i];
       double windSpeed = (speedSlices[j] + speedSlices[j + 1]) / 2.0;
 
-      farmPower(i, j) = calculatePartialAEP(turbineLocations, windDirection, windSpeed);
+      // Calculate the AEP for this wind instance and multiply it by the probability of the wind instance
+      farmPower(i, j) = calculatePartialAEP(turbineLocations, windDirection, windSpeed) * binnedWindData(i, j);
     }
   }
-
-  // Multiply the respective values with the probabilities of the wind instances
-  farmPower *= binnedWindData;
 
   // Convert farm power to AEP
   double aep = 365.0 * 24.0 * farmPower.sum();
@@ -54,8 +53,7 @@ double Evaluator::calculatePartialAEP(const TurbineLocations &turbineLocations,
   auto speedDeficit = jensenParkWake(rotatedLocations, windSpeed);
 
   // Power of all turbines
-  Vector<TurbineCount> turbinePower;
-  turbinePower.setZero();
+  double turbinePower = 0.0;
 
   // Calculate the individual turbine power for the given wind speed
   for (int i = 0; i < TurbineCount; i++) {
@@ -64,14 +62,10 @@ double Evaluator::calculatePartialAEP(const TurbineLocations &turbineLocations,
 
     // Use the power curve data as look up to estimate the power produced
     // by the turbine for the corresponding closest matching wind speed
-    int minRowIndex;
-    (powerCurve.col(0) - effectiveWindSpeed).abs().minCoeff(&minRowIndex);
-
-    turbinePower[i] = powerCurve(minRowIndex, 2);
+    turbinePower += powerCurve(std::round(effectiveWindSpeed / 0.1), 2);
   }
 
-  // Sum the power from all turbines for the given wind instance
-  return turbinePower.sum();
+  return turbinePower;
 }
 
 TurbineLocations Evaluator::rotateFrame(const TurbineLocations &turbineLocations, double windDirection) const {
@@ -97,9 +91,7 @@ Vector<TurbineCount> Evaluator::jensenParkWake(const TurbineLocations &rotatedTu
                                                double windSpeed) const {
   // Use the power curve data as look up to estimate the thrust coefficient
   // by the turbine for the corresponding closest matching wind speed
-  int minRowIndex;
-  (powerCurve.col(0) - windSpeed).abs().minCoeff(&minRowIndex);
-  double thrustCoefficient = powerCurve(minRowIndex, 1);
+  double thrustCoefficient = powerCurve(std::round(windSpeed / 0.1), 1);
 
   // Velocity deficit suffered by each turbine for this particular wind instance
   Matrix<TurbineCount, TurbineCount> impactOnIbyj;
@@ -114,21 +106,21 @@ Vector<TurbineCount> Evaluator::jensenParkWake(const TurbineLocations &rotatedTu
       }
 
       double x = rotatedTurbineLocations(i, 0) - rotatedTurbineLocations(j, 0);
-      double y = rotatedTurbineLocations(i, 1) - rotatedTurbineLocations(j, 1);
 
-      if (x <= 0 || std::abs(y) > (TurbineRadius + WakeDecay * x)) {
-        // The impact is zero if j is not an upstream turbine or if i is outside j's wake region
-        impactOnIbyj(i, j) = 0.0;
-      } else {
-        // Use Jensen's model to calculate the impact
-        impactOnIbyj(i, j) =
-            (1 - std::sqrt(1 - thrustCoefficient)) * std::pow(TurbineRadius / (TurbineRadius + WakeDecay * x), 2);
+      if (x > 0) {
+        double y = rotatedTurbineLocations(i, 1) - rotatedTurbineLocations(j, 1);
+
+        if (std::abs(y) <= (TurbineRadius + WakeDecay * x)) {
+          // Use Jensen's model to calculate the impact
+          impactOnIbyj(i, j) =
+              (1 - std::sqrt(1 - thrustCoefficient)) * std::pow(TurbineRadius / (TurbineRadius + WakeDecay * x), 2);
+        }
       }
     }
   }
 
   // Calculate the total speed deficit from all upstream turbines
-  impactOnIbyj = impactOnIbyj.pow(2);
+  impactOnIbyj = impactOnIbyj.pow(2.0);
   Vector<TurbineCount> sum;
 
   for (int i = 0; i < TurbineCount; i++) {
@@ -153,14 +145,17 @@ Matrix<36, 15> Evaluator::binWindData(const WindData &windData) const {
 
       for (int k = 0, kMax = windData.rows(); k < kMax; k++) {
         double direction = windData(k, 0);
-        double speed = windData(k, 1);
 
-        if (direction == targetDirection && speed >= minSpeed && speed < maxSpeed) {
-          total++;
+        if (direction == targetDirection) {
+          double speed = windData(k, 1);
+
+          if (speed >= minSpeed && speed < maxSpeed) {
+            total++;
+          }
         }
-
-        binnedData(i, j) = total;
       }
+
+      binnedData(i, j) = total;
     }
   }
 
