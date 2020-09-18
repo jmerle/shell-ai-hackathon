@@ -13,7 +13,10 @@ CLASS("Evaluator") {
       auto powerCurve = fileReader.readPowerCurve("data/power_curve.csv");
       auto windData = fileReader.readWindData("data/wind/wind_data_2007.csv");
 
-      REQUIRE_NEAR(evaluator.calculateAEP(turbineLocations, powerCurve, windData), 505.450636596680);
+      // There seem to be some floating point precision differences between C++ and Python
+      // I hope a precision of 0.0001 is enough
+      REQUIRE_THAT(evaluator.calculateAEP(turbineLocations, powerCurve, windData),
+                   Catch::WithinAbs(505.450636596680, 0.0001));
     }
   }
 }

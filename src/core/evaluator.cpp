@@ -1,6 +1,6 @@
 #include "evaluator.h"
 
-#include <iostream>
+#include <cmath>
 
 Evaluator::Evaluator() {
   for (int i = 0; i < directionSlices.rows(); i++) {
@@ -76,15 +76,68 @@ double Evaluator::calculatePartialAEP(const TurbineLocations &turbineLocations,
 }
 
 TurbineLocations Evaluator::rotateFrame(const TurbineLocations &turbineLocations, double windDirection) const {
-  // TODO: Implement
-  return TurbineLocations();
+  // Rotate the wind flow direction so that it aligns with the +ve x-axis
+  windDirection -= 90.0;
+
+  // Convert in-flow wind direction from degrees to radians
+  windDirection = windDirection * Pi / 180.0;
+
+  // Constants for coordinate transformation
+  double cosDirection = std::cos(windDirection);
+  double sinDirection = std::sin(windDirection);
+
+  // Rotate coordinates to downwind-crosswind coordinates
+  TurbineLocations rotatedLocations;
+  rotatedLocations.col(0) = (turbineLocations.col(0) * cosDirection) - (turbineLocations.col(1) * sinDirection);
+  rotatedLocations.col(1) = (turbineLocations.col(0) * sinDirection) + (turbineLocations.col(1) * cosDirection);
+
+  return rotatedLocations;
 }
 
 Vector<TurbineCount> Evaluator::jensenParkWake(const TurbineLocations &rotatedTurbineLocations,
                                                const PowerCurve &powerCurve,
                                                double windSpeed) const {
-  // TODO: Implement
-  return Vector<TurbineCount>();
+  // Use the power curve data as look up to estimate the thrust coefficient
+  // by the turbine for the corresponding closest matching wind speed
+  int minRowIndex;
+  (powerCurve.col(0) - windSpeed).abs().minCoeff(&minRowIndex);
+  double thrustCoefficient = powerCurve(minRowIndex, 1);
+
+  // Velocity deficit suffered by each turbine for this particular wind instance
+  Matrix<TurbineCount, TurbineCount> impactOnIbyj;
+  impactOnIbyj.setZero();
+
+  // Check the effect each turbine has on the others
+  // i is the target turbine, j is the turbine which may cause a deficit for i
+  for (int i = 0; i < TurbineCount; i++) {
+    for (int j = 0; j < TurbineCount; j++) {
+      if (i == j) {
+        continue;
+      }
+
+      double x = rotatedTurbineLocations(i, 0) - rotatedTurbineLocations(j, 0);
+      double y = rotatedTurbineLocations(i, 1) - rotatedTurbineLocations(j, 1);
+
+      if (x <= 0 || std::abs(y) > (TurbineRadius + WakeDecay * x)) {
+        // The impact is zero if j is not an upstream turbine or if i is outside j's wake region
+        impactOnIbyj(i, j) = 0.0;
+      } else {
+        // Use Jensen's model to calculate the impact
+        impactOnIbyj(i, j) =
+            (1 - std::sqrt(1 - thrustCoefficient)) * std::pow(TurbineRadius / (TurbineRadius + WakeDecay * x), 2);
+      }
+    }
+  }
+
+  // Calculate the total speed deficit from all upstream turbines
+  impactOnIbyj = impactOnIbyj.pow(2);
+  Vector<TurbineCount> sum;
+
+  for (int i = 0; i < TurbineCount; i++) {
+    sum(i) = impactOnIbyj.row(i).sum();
+  }
+
+  return sum.sqrt();
 }
 
 Matrix<36, 15> Evaluator::binWindData(const WindData &windData) const {

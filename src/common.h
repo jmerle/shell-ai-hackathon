@@ -16,8 +16,12 @@ constexpr double MapHeight = 4000.0;
 constexpr double PerimeterClearance = 50.0;
 constexpr double ProximityThreshold = 400.0;
 
-constexpr double RotorDiameter = 100.0;
-constexpr double RotorRadius = RotorDiameter / 2.0;
+constexpr double TurbineDiameter = 100.0;
+constexpr double TurbineRadius = TurbineDiameter / 2.0;
+
+constexpr double WakeDecay = 0.05;
+
+constexpr double Pi = 3.14159265358979323846;
 
 // Typedefs
 
