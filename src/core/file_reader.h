@@ -1,5 +1,7 @@
 #pragma once
 
+#include "constants.h"
+
 #include <eigen3/Eigen/Dense>
 
 #include <filesystem>
@@ -12,7 +14,7 @@ class FileReader {
  public:
   FileReader();
 
-  Eigen::Matrix<double, 50, 2> readTurbineLocations(const std::string &path) const;
+  Eigen::Matrix<double, TurbineCount, 2> readTurbineLocations(const std::string &path) const;
   Eigen::Matrix<double, Eigen::Dynamic, 3> readPowerCurve(const std::string &path) const;
   Eigen::Matrix<double, Eigen::Dynamic, 2> readWindData(const std::string &path) const;
 

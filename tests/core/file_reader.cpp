@@ -9,7 +9,7 @@ CLASS("FileReader") {
     TEST("Correctly reads from the provided file") {
       auto result = fileReader.readTurbineLocations("data/turbine_loc_test.csv");
 
-      REQUIRE(result.rows() == 50);
+      REQUIRE(result.rows() == TurbineCount);
       REQUIRE(result.cols() == 2);
 
       REQUIRE_NEAR(result(0, 0), 3690.323986);

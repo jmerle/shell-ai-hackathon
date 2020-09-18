@@ -19,12 +19,12 @@ FileReader::FileReader() {
   }
 }
 
-Eigen::Matrix<double, 50, 2> FileReader::readTurbineLocations(const std::string &path) const {
+Eigen::Matrix<double, TurbineCount, 2> FileReader::readTurbineLocations(const std::string &path) const {
   auto csv = readCsv(path);
 
-  Eigen::Matrix<double, 50, 2> turbineLocations;
+  Eigen::Matrix<double, TurbineCount, 2> turbineLocations;
 
-  for (int i = 0; i < 50; i++) {
+  for (int i = 0; i < TurbineCount; i++) {
     turbineLocations(i, 0) = std::stod(csv[i][0]);
     turbineLocations(i, 1) = std::stod(csv[i][1]);
   }
