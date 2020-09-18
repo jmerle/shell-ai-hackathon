@@ -2,11 +2,11 @@
 
 #include <cmath>
 
-bool ConstraintChecker::isValidLayout(const Eigen::Matrix<double, TurbineCount, 2> &turbineLocations) const {
+bool ConstraintChecker::isValidLayout(const TurbineLocations &turbineLocations) const {
   return checkPerimeterConstraint(turbineLocations) && checkProximityConstraint(turbineLocations);
 }
 
-bool ConstraintChecker::checkPerimeterConstraint(const Eigen::Matrix<double, TurbineCount, 2> &turbineLocations) const {
+bool ConstraintChecker::checkPerimeterConstraint(const TurbineLocations &turbineLocations) const {
   for (int i = 0; i < TurbineCount; i++) {
     double x = turbineLocations(i, 0);
     double y = turbineLocations(i, 1);
@@ -20,7 +20,7 @@ bool ConstraintChecker::checkPerimeterConstraint(const Eigen::Matrix<double, Tur
   return true;
 }
 
-bool ConstraintChecker::checkProximityConstraint(const Eigen::Matrix<double, TurbineCount, 2> &turbineLocations) const {
+bool ConstraintChecker::checkProximityConstraint(const TurbineLocations &turbineLocations) const {
   for (int i = 0; i < TurbineCount; i++) {
     for (int j = 0; j < TurbineCount; j++) {
       if (i == j) {

@@ -19,10 +19,10 @@ FileReader::FileReader() {
   }
 }
 
-Eigen::Matrix<double, TurbineCount, 2> FileReader::readTurbineLocations(const std::string &path) const {
+TurbineLocations FileReader::readTurbineLocations(const std::string &path) const {
   auto csv = readCsv(path);
 
-  Eigen::Matrix<double, TurbineCount, 2> turbineLocations;
+  TurbineLocations turbineLocations;
 
   for (int i = 0; i < TurbineCount; i++) {
     turbineLocations(i, 0) = std::stod(csv[i][0]);
@@ -32,10 +32,10 @@ Eigen::Matrix<double, TurbineCount, 2> FileReader::readTurbineLocations(const st
   return turbineLocations;
 }
 
-Eigen::Matrix<double, Eigen::Dynamic, 3> FileReader::readPowerCurve(const std::string &path) const {
+PowerCurve FileReader::readPowerCurve(const std::string &path) const {
   auto csv = readCsv(path);
 
-  Eigen::Matrix<double, Eigen::Dynamic, 3> powerCurve(csv.size(), 3);
+  PowerCurve powerCurve(csv.size(), 3);
 
   for (int i = 0; i < csv.size(); i++) {
     powerCurve(i, 0) = std::stod(csv[i][0]);
@@ -46,10 +46,10 @@ Eigen::Matrix<double, Eigen::Dynamic, 3> FileReader::readPowerCurve(const std::s
   return powerCurve;
 }
 
-Eigen::Matrix<double, Eigen::Dynamic, 2> FileReader::readWindData(const std::string &path) const {
+WindData FileReader::readWindData(const std::string &path) const {
   auto csv = readCsv(path);
 
-  Eigen::Matrix<double, Eigen::Dynamic, 2> windData(csv.size(), 2);
+  WindData windData(csv.size(), 2);
 
   for (int i = 0; i < csv.size(); i++) {
     windData(i, 0) = std::stod(csv[i][1]);
