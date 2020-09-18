@@ -10,8 +10,7 @@
 
 constexpr int TurbineCount = 50;
 
-constexpr double MapWidth = 4000.0;
-constexpr double MapHeight = 4000.0;
+constexpr double MapSize = 4000.0;
 
 constexpr double PerimeterClearance = 50.0;
 constexpr double ProximityThreshold = 400.0;

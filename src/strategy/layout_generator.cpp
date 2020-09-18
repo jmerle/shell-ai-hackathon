@@ -1,22 +1,22 @@
 #include "strategy/layout_generator.h"
 
-TurbineLocations LayoutGenerator::generateLayout() const {
+LayoutGenerator::LayoutGenerator() : distribution(PerimeterClearance, MapSize - PerimeterClearance) {
+  rng.seed(std::random_device{}());
+}
+
+TurbineLocations LayoutGenerator::generateLayout() {
   TurbineLocations turbineLocations;
 
-  int currentRow = 0;
-
-  for (int y = PerimeterClearance; y < MapHeight - PerimeterClearance; y += ProximityThreshold) {
-    for (int x = PerimeterClearance; x < MapWidth - PerimeterClearance; x += ProximityThreshold) {
-      turbineLocations(currentRow, 0) = x;
-      turbineLocations(currentRow, 1) = y;
-      currentRow++;
-
-      if (currentRow >= TurbineCount) {
-        turbineLocations(49, 0) = turbineLocations(49, 0) + 0.0005;
-        return turbineLocations;
-      }
-    }
+  for (int i = 0; i < TurbineCount; i++) {
+    do {
+      turbineLocations(i, 0) = generateCoordinate();
+      turbineLocations(i, 1) = generateCoordinate();
+    } while (!constraintChecker.checkProximityConstraint(turbineLocations, i + 1));
   }
 
   return turbineLocations;
+}
+
+double LayoutGenerator::generateCoordinate() {
+  return distribution(rng);
 }

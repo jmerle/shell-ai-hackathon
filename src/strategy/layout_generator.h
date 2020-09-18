@@ -2,7 +2,21 @@
 
 #include "common.h"
 
+#include "core/constraint_checker.h"
+
+#include <random>
+
 class LayoutGenerator {
+  ConstraintChecker constraintChecker;
+
+  std::uniform_real_distribution<double> distribution;
+  std::mt19937 rng;
+
  public:
-  TurbineLocations generateLayout() const;
+  LayoutGenerator();
+
+  TurbineLocations generateLayout();
+
+ private:
+  double generateCoordinate();
 };

@@ -35,7 +35,7 @@ int main() {
 
     double aep = evaluator.calculateAEP(turbineLocations);
 
-    if (aep < currentBestAEP) {
+    if (aep > currentBestAEP) {
       std::cout << "New best AEP: " << aep << std::endl;
 
       currentBestAEP = aep;

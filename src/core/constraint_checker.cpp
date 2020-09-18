@@ -11,8 +11,8 @@ bool ConstraintChecker::checkPerimeterConstraint(const TurbineLocations &turbine
     double x = turbineLocations(i, 0);
     double y = turbineLocations(i, 1);
 
-    if (x < PerimeterClearance || x > MapWidth - PerimeterClearance
-        || y < PerimeterClearance || y > MapHeight - PerimeterClearance) {
+    if (x < PerimeterClearance || x > MapSize - PerimeterClearance
+        || y < PerimeterClearance || y > MapSize - PerimeterClearance) {
       return false;
     }
   }
@@ -20,9 +20,9 @@ bool ConstraintChecker::checkPerimeterConstraint(const TurbineLocations &turbine
   return true;
 }
 
-bool ConstraintChecker::checkProximityConstraint(const TurbineLocations &turbineLocations) const {
-  for (int i = 0; i < TurbineCount; i++) {
-    for (int j = 0; j < TurbineCount; j++) {
+bool ConstraintChecker::checkProximityConstraint(const TurbineLocations &turbineLocations, int locationsToCheck) const {
+  for (int i = 0; i < TurbineCount && i < locationsToCheck; i++) {
+    for (int j = 0; j < TurbineCount && j < locationsToCheck; j++) {
       if (i == j) {
         continue;
       }

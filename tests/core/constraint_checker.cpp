@@ -19,8 +19,8 @@ CLASS("ConstraintChecker") {
 
       int currentRow = 0;
 
-      for (int y = PerimeterClearance; y < MapHeight - PerimeterClearance; y += ProximityThreshold) {
-        for (int x = PerimeterClearance; x < MapWidth - PerimeterClearance; x += ProximityThreshold) {
+      for (int y = PerimeterClearance; y < MapSize - PerimeterClearance; y += ProximityThreshold) {
+        for (int x = PerimeterClearance; x < MapSize - PerimeterClearance; x += ProximityThreshold) {
           if (currentRow >= TurbineCount) {
             break;
           }
@@ -41,8 +41,8 @@ CLASS("ConstraintChecker") {
 
       int currentRow = 0;
 
-      for (int y = PerimeterClearance; y < MapHeight - PerimeterClearance; y += ProximityThreshold) {
-        for (int x = PerimeterClearance; x < MapWidth - PerimeterClearance; x += ProximityThreshold) {
+      for (int y = PerimeterClearance; y < MapSize - PerimeterClearance; y += ProximityThreshold) {
+        for (int x = PerimeterClearance; x < MapSize - PerimeterClearance; x += ProximityThreshold) {
           if (currentRow >= TurbineCount) {
             break;
           }
