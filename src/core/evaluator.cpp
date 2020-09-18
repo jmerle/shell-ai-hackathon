@@ -48,8 +48,31 @@ double Evaluator::calculatePartialAEP(const TurbineLocations &turbineLocations,
                                       const PowerCurve &powerCurve,
                                       double windDirection,
                                       double windSpeed) const {
-  // TODO: Implement
-  return 0;
+  // Rotate turbine locations to downwind-crosswind according to the given wind direction
+  auto rotatedLocations = rotateFrame(turbineLocations, windDirection);
+
+  // Use Jensen's wake model to calculate speed deficits by wake
+  auto speedDeficit = jensenParkWake(rotatedLocations, powerCurve, windSpeed);
+
+  // Power of all turbines
+  Vector<TurbineCount> turbinePower;
+  turbinePower.setZero();
+
+  // Calculate the individual turbine power for the given wind speed
+  for (int i = 0; i < TurbineCount; i++) {
+    // Effective wind speed due to the happening wake
+    double effectiveWindSpeed = windSpeed * (1.0 - speedDeficit[i]);
+
+    // Use the power curve data as look up to estimate the power produced
+    // by the turbine for the corresponding closest matching wind speed
+    int minRowIndex;
+    (powerCurve.col(0) - effectiveWindSpeed).abs().minCoeff(&minRowIndex);
+
+    turbinePower[i] = powerCurve(minRowIndex, 2);
+  }
+
+  // Sum the power from all turbines for the given wind instance
+  return turbinePower.sum();
 }
 
 TurbineLocations Evaluator::rotateFrame(const TurbineLocations &turbineLocations, double windDirection) const {

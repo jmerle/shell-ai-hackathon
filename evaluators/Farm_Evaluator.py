@@ -162,7 +162,6 @@ def binWindResourceData(wind_data_file_name):
             binned_wind[i,j] = foo.shape[0]
 
     wind_inst_freq   = binned_wind/np.sum(binned_wind)
-    print(wind_inst_freq)
 
     return(wind_inst_freq)
 
