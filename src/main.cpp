@@ -8,6 +8,12 @@
 int main() {
   LayoutEvaluator evaluator;
   evaluator.addWindData("data/wind/wind_data_2007.csv");
+  evaluator.addWindData("data/wind/wind_data_2008.csv");
+  evaluator.addWindData("data/wind/wind_data_2009.csv");
+  evaluator.addWindData("data/wind/wind_data_2013.csv");
+  evaluator.addWindData("data/wind/wind_data_2014.csv");
+  evaluator.addWindData("data/wind/wind_data_2015.csv");
+  evaluator.addWindData("data/wind/wind_data_2017.csv");
 
   FileReader fileReader;
   auto outputPath = fileReader.resolvePath("output/turbine_locations.csv");
