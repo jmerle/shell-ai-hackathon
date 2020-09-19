@@ -7,7 +7,7 @@
 #include <iostream>
 
 // The amount of times to run each function
-constexpr int Runs = 1000;
+constexpr int Runs = 5000;
 
 double measureRunsPerSecond(const std::function<void()> &func) {
   auto start = std::chrono::high_resolution_clock::now();
