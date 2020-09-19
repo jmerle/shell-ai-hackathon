@@ -27,8 +27,9 @@ double Evaluator::calculateAEP(const TurbineLocations &turbineLocations) const {
 #pragma omp parallel for
   for (int i = 0; i < 36; i++) {
     for (int j = 0; j < 15; j++) {
-      // Take the middle value as effective speed
       double windDirection = directionSlices[i];
+
+      // Take the middle value as effective speed
       double windSpeed = (speedSlices[j] + speedSlices[j + 1]) / 2.0;
 
       // Calculate the AEP for this wind instance and multiply it by the probability of the wind instance
