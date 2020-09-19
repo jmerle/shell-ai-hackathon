@@ -23,17 +23,9 @@ int main() {
   LayoutGenerator layoutGenerator;
 
   // Continuously check for better layouts
-#pragma clang diagnostic push
 #pragma ide diagnostic ignored "EndlessLoop"
   while (true) {
     auto turbineLocations = layoutGenerator.generateLayout();
-
-    // If the first cell is set to -1.0 the LayoutGenerator was unable to create a valid layout
-    // While exceptions would be nicer, this is faster
-    if (turbineLocations(0, 0) < 0.0) {
-      continue;
-    }
-
     double aep = layoutEvaluator.calculateAEP(turbineLocations);
 
     if (aep > currentBestAEP) {
@@ -52,7 +44,4 @@ int main() {
       outputFile.close();
     }
   }
-#pragma clang diagnostic pop
-
-  return 0;
 }

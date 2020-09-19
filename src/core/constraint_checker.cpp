@@ -22,11 +22,7 @@ bool ConstraintChecker::checkPerimeterConstraint(const TurbineLocations &turbine
 
 bool ConstraintChecker::checkProximityConstraint(const TurbineLocations &turbineLocations, int locationsToCheck) const {
   for (int i = 0; i < TurbineCount && i < locationsToCheck; i++) {
-    for (int j = 0; j < TurbineCount && j < locationsToCheck; j++) {
-      if (i == j) {
-        continue;
-      }
-
+    for (int j = i + 1; j < TurbineCount && j < locationsToCheck; j++) {
       double x1 = turbineLocations(i, 0);
       double y1 = turbineLocations(i, 1);
       double x2 = turbineLocations(j, 0);

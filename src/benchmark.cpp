@@ -22,7 +22,7 @@ double measureRunsPerSecond(const std::function<void()> &func) {
   return (double) Runs / ((double) duration / 1000.0);
 }
 
-double benchmarkEvaluator() {
+void benchmarkEvaluator() {
   std::cout << "Preparing evaluator" << std::endl;
 
   FileReader fileReader;
@@ -34,29 +34,30 @@ double benchmarkEvaluator() {
 
   std::cout << "Running the evaluator " << Runs << " times, this may take a while" << std::endl;
 
-  return measureRunsPerSecond([&]() -> void {
+  double evaluatorRuns = measureRunsPerSecond([&]() -> void {
     evaluator.calculateAEP(turbineLocations);
   });
+
+  std::cout << "Evaluations per second: " << evaluatorRuns << std::endl;
 }
 
-double benchmarkGenerator() {
+void benchmarkLayoutGenerator() {
   std::cout << "Preparing layout generator" << std::endl;
 
   LayoutGenerator layoutGenerator;
 
   std::cout << "Running the layout generator " << Runs << " times, this may take a while" << std::endl;
 
-  return measureRunsPerSecond([&]() -> void {
+  double layoutGeneratorRuns = measureRunsPerSecond([&]() -> void {
     layoutGenerator.generateLayout();
   });
+
+  std::cout << "Layout generations per second: " << layoutGeneratorRuns << std::endl;
 }
 
 int main() {
-  double evaluatorRuns = benchmarkEvaluator();
-  double generatorRuns = benchmarkGenerator();
-
-  std::cout << "Evaluations per second: " << evaluatorRuns << std::endl;
-  std::cout << "Layout generations per second: " << generatorRuns << std::endl;
+  benchmarkEvaluator();
+  benchmarkLayoutGenerator();
 
   return 0;
 }
