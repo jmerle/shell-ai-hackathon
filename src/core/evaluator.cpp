@@ -1,7 +1,6 @@
 #include "evaluator.h"
 
 #include <cmath>
-#include <iostream>
 
 Evaluator::Evaluator(const PowerCurve &powerCurve, const WindData &windData) : powerCurve(powerCurve) {
   for (int i = 0; i < directionSlices.rows(); i++) {
@@ -25,8 +24,9 @@ double Evaluator::calculateAEP(const TurbineLocations &turbineLocations) const {
   farmPower.setZero();
 
   // Loop over every wind instance and calculate the power for that instance
-  for (int i = 0, iMax = directionSlices.rows(); i < iMax; i++) {
-    for (int j = 0, jMax = speedSlices.rows() - 1; j < jMax; j++) {
+#pragma omp parallel for
+  for (int i = 0; i < 36; i++) {
+    for (int j = 0; j < 15; j++) {
       // Take the middle value as effective speed
       double windDirection = directionSlices[i];
       double windSpeed = (speedSlices[j] + speedSlices[j + 1]) / 2.0;

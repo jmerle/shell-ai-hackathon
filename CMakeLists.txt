@@ -33,11 +33,14 @@ if (COMPILER_SUPPORTS_MARCH_NATIVE)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
 endif ()
 
+# Find OpenMP
+find_package(OpenMP)
+
 # Variables for the main executable
 file(GLOB_RECURSE MAIN_SOURCES src/*.cpp)
 list(REMOVE_ITEM MAIN_SOURCES "${CMAKE_CURRENT_LIST_DIR}/src/benchmark.cpp")
 set(MAIN_HEADERS src)
-set(MAIN_LIBRARIES CONAN_PKG::eigen)
+set(MAIN_LIBRARIES CONAN_PKG::eigen OpenMP::OpenMP_CXX)
 
 # Variables for the benchmark executable
 file(GLOB_RECURSE BENCHMARK_SOURCES src/*.cpp)
